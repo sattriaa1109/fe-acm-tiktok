@@ -3,7 +3,7 @@ import { ServerIcon } from './Icons'
 const STEPS = [
   {
     title: 'Generate komentar',
-    text: 'AI membuat komentar dari konteks video, mood, dan mode — unik per akun atau sama untuk semua.',
+    text: 'AI membuat komentar dari konteks video, arahan prompt, mood, dan mode — unik per akun atau sama untuk semua.',
   },
   {
     title: 'Kirim via Chrome CDP',

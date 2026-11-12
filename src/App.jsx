@@ -41,6 +41,7 @@ export default function App() {
   const [mood, setMood] = useState('positive')
   const [commentMode, setCommentMode] = useState('unique')
   const [context, setContext] = useState('')
+  const [customPrompt, setCustomPrompt] = useState('')
   const [selected, setSelected] = useState(['akun1'])
   const [errors, setErrors] = useState({})
   const [pasteHint, setPasteHint] = useState(null)
@@ -170,6 +171,7 @@ export default function App() {
       mood,
       context: context.trim(),
       perAccountComment: commentMode === 'unique',
+      customPrompt: customPrompt.trim(),
     }
 
     try {
@@ -192,6 +194,7 @@ export default function App() {
         accounts: selected,
         context: payload.context,
         perAccountComment: payload.perAccountComment,
+        customPrompt: payload.customPrompt,
         message,
         ok,
       })
@@ -213,6 +216,7 @@ export default function App() {
         accounts: selected,
         context: payload.context,
         perAccountComment: payload.perAccountComment,
+        customPrompt: payload.customPrompt,
         message,
         ok: false,
       })
@@ -263,8 +267,8 @@ export default function App() {
               <span className="gradient-text">dari banyak akun.</span>
             </h1>
             <p>
-              Tempel link video TikTok, atur konteks, mood, dan akun. Backend akan membuat
-              komentar dengan AI lalu mengirimnya lewat akun yang sudah login di Chrome.
+              Tempel link video TikTok, atur konteks, prompt, mood, dan akun. Backend akan
+              membuat komentar dengan AI lalu mengirimnya lewat akun yang sudah login di Chrome.
             </p>
           </div>
 
@@ -439,6 +443,28 @@ export default function App() {
                 </div>
 
                 <div className="subfield">
+                  <label className="subfield-label" htmlFor="comment-prompt">
+                    Arahan komentar (prompt)
+                    <span className="optional-tag">opsional</span>
+                  </label>
+                  <div className="context-field">
+                    <textarea
+                      id="comment-prompt"
+                      rows={3}
+                      maxLength={500}
+                      placeholder="Contoh: Buat komentar singkat, santai, pakai 1 emoji, jangan pakai hashtag."
+                      value={customPrompt}
+                      onChange={(event) => setCustomPrompt(event.target.value)}
+                    />
+                    <span className="char-count">{customPrompt.length}/500</span>
+                  </div>
+                  <p className="field-hint subtle">
+                    Arahan ini ditambahkan ke prompt AI. Contoh: “komentar lucu”, “jangan
+                    menyinggung”, “pakai bahasa gaul”, atau “fokus puji outfit”.
+                  </p>
+                </div>
+
+                <div className="subfield">
                   <label className="subfield-label" htmlFor="video-context">
                     Konteks video
                     <span className="optional-tag">opsional</span>
@@ -531,6 +557,12 @@ export default function App() {
                       )}
                       {commentMode === 'unique' ? 'Unik' : 'Sama'}
                     </span>
+                    {customPrompt.trim() && (
+                      <span className="mini-chip">
+                        <SparklesIcon size={12} />
+                        Prompt
+                      </span>
+                    )}
                     {context.trim() && (
                       <span className="mini-chip">
                         <CheckIcon size={12} />

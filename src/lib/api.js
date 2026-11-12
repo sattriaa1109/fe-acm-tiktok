@@ -47,7 +47,14 @@ export function checkStatus(signal) {
   return request('/status', { method: 'GET', signal })
 }
 
-export function submitComment({ url, accounts, mood, context = '', perAccountComment = true }) {
+export function submitComment({
+  url,
+  accounts,
+  mood,
+  context = '',
+  perAccountComment = true,
+  customPrompt = '',
+}) {
   return request('/comment', {
     method: 'POST',
     body: JSON.stringify({
@@ -56,6 +63,7 @@ export function submitComment({ url, accounts, mood, context = '', perAccountCom
       mood,
       context,
       per_account_comment: perAccountComment,
+      custom_prompt: customPrompt,
     }),
   })
 }

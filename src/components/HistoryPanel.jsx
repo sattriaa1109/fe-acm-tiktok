@@ -44,11 +44,18 @@ export function HistoryPanel({ history, onClear }) {
                   </p>
                   <p
                     className="history-meta"
-                    title={item.context ? `Konteks: ${item.context}` : item.message}
+                    title={
+                      item.customPrompt
+                        ? `Prompt: ${item.customPrompt}`
+                        : item.context
+                          ? `Konteks: ${item.context}`
+                          : item.message
+                    }
                   >
                     {item.accounts.length} akun ·{' '}
                     {item.perAccountComment === false ? 'komentar sama' : 'komentar unik'}
                     {item.context ? ' · ada konteks' : ''}
+                    {item.customPrompt ? ' · ada prompt' : ''}
                   </p>
                 </div>
               </li>

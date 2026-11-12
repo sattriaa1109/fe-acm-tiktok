@@ -40,7 +40,7 @@ Atau salin `.env.example` menjadi `.env` lalu sesuaikan nilainya.
 | Method | Endpoint   | Body / Response |
 | ------ | ---------- | --------------- |
 | `GET`  | `/status`  | `{ "status": "ok" }` |
-| `POST` | `/comment` | Body: `{ "url": string, "accounts": string[], "mood": string, "context": string, "per_account_comment": boolean }` → `{ "success": boolean, "message": string }` |
+| `POST` | `/comment` | Body: `{ "url": string, "accounts": string[], "mood": string, "context": string, "per_account_comment": boolean, "custom_prompt": string }` → `{ "success": boolean, "message": string }` |
 
 Contoh body:
 
@@ -50,14 +50,15 @@ Contoh body:
   "accounts": ["akun1", "akun2"],
   "mood": "positive",
   "context": "Video dance viral dengan lagu pop",
-  "per_account_comment": true
+  "per_account_comment": true,
+  "custom_prompt": "Komentar singkat, lucu, pakai 1 emoji, jangan pakai hashtag"
 }
 ```
 
-`context` dan `per_account_comment` diteruskan ke `run_auto_comment()` di
-`tiktok_comment.py`. `context` kosong akan diganti backend dengan
-`"Video TikTok di URL: <url>"`. `per_account_comment: true` membuat AI
-menghasilkan komentar berbeda per akun; `false` memakai satu komentar yang sama.
+`context`, `per_account_comment`, dan `custom_prompt` diteruskan ke
+`run_auto_comment()` di `tiktok_comment.py`. `context` kosong akan diganti backend
+dengan `"Video TikTok di URL: <url>"`. `custom_prompt` ditambahkan ke prompt AI
+sebagai arahan tambahan yang wajib diikuti.
 
 Catatan penting: backend memproses komentar di background, sehingga respons
 `POST /comment` hanya menandakan perintah diterima. Hasil per akun harus dilihat
@@ -68,6 +69,8 @@ di log Docker/terminal backend.
 - **Mood komentar** — `positive` atau `negative`, sesuai `list_moods()`.
 - **Mode komentar** — `Unik per akun` (`per_account_comment: true`) atau
   `Sama untuk semua` (`per_account_comment: false`).
+- **Arahan komentar (prompt)** — arahan manual opsional (maks. 500 karakter di UI)
+  yang dikirim sebagai `custom_prompt` dan ditambahkan ke prompt AI.
 - **Konteks video** — deskripsi opsional (maks. 500 karakter di UI) yang dipakai
   AI sebagai `context`. Kosongkan untuk memakai URL video sebagai konteks.
 
