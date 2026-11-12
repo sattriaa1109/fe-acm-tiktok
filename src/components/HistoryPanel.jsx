@@ -42,8 +42,13 @@ export function HistoryPanel({ history, onClear }) {
                   <p className="history-url" title={item.url}>
                     {shortUrl(item.url)}
                   </p>
-                  <p className="history-meta" title={item.message}>
-                    {item.accounts.length} akun · {item.accounts.join(', ')}
+                  <p
+                    className="history-meta"
+                    title={item.context ? `Konteks: ${item.context}` : item.message}
+                  >
+                    {item.accounts.length} akun ·{' '}
+                    {item.perAccountComment === false ? 'komentar sama' : 'komentar unik'}
+                    {item.context ? ' · ada konteks' : ''}
                   </p>
                 </div>
               </li>

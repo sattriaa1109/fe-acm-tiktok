@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ACCOUNT_IDS, ACCOUNTS, MOODS, getMood } from './data/accounts'
+import { ACCOUNT_IDS, ACCOUNTS, COMMENT_MODES, MOODS, getMood } from './data/accounts'
 import { API_BASE, checkStatus, submitComment } from './lib/api'
 import { HistoryPanel } from './components/HistoryPanel'
 import { InfoCard } from './components/InfoCard'
@@ -39,6 +39,8 @@ export default function App() {
   const [health, setHealth] = useState({ state: 'checking', checkedAt: null, error: null })
   const [url, setUrl] = useState('')
   const [mood, setMood] = useState('positive')
+  const [commentMode, setCommentMode] = useState('unique')
+  const [context, setContext] = useState('')
   const [selected, setSelected] = useState(['akun1'])
   const [errors, setErrors] = useState({})
   const [pasteHint, setPasteHint] = useState(null)
@@ -162,7 +164,13 @@ export default function App() {
     setSubmitting(true)
     setResult(null)
 
-    const payload = { url: url.trim(), accounts: selected, mood }
+    const payload = {
+      url: url.trim(),
+      accounts: selected,
+      mood,
+      context: context.trim(),
+      perAccountComment: commentMode === 'unique',
+    }
 
     try {
       const data = await submitComment(payload)
@@ -182,6 +190,8 @@ export default function App() {
         url: payload.url,
         mood,
         accounts: selected,
+        context: payload.context,
+        perAccountComment: payload.perAccountComment,
         message,
         ok,
       })
@@ -201,6 +211,8 @@ export default function App() {
         url: payload.url,
         mood,
         accounts: selected,
+        context: payload.context,
+        perAccountComment: payload.perAccountComment,
         message,
         ok: false,
       })
@@ -251,8 +263,8 @@ export default function App() {
               <span className="gradient-text">dari banyak akun.</span>
             </h1>
             <p>
-              Tempel link video TikTok, pilih mood dan akun. Backend akan membuat komentar lalu
-              mengirimnya lewat akun yang sudah login di Chrome.
+              Tempel link video TikTok, atur konteks, mood, dan akun. Backend akan membuat
+              komentar dengan AI lalu mengirimnya lewat akun yang sudah login di Chrome.
             </p>
           </div>
 
@@ -350,42 +362,102 @@ export default function App() {
               </div>
 
               <fieldset className="section-block">
-                <legend className="sr-only">Mood komentar</legend>
+                <legend className="sr-only">Pengaturan AI</legend>
                 <div className="section-head">
                   <span className="section-step">02</span>
                   <div>
-                    <h3>Mood komentar</h3>
-                    <p>Gaya bahasa yang dipakai AI saat membuat komentar.</p>
+                    <h3>Pengaturan AI</h3>
+                    <p>Atur gaya, mode, dan konteks yang dipakai AI untuk membuat komentar.</p>
                   </div>
                 </div>
 
-                <div className="mood-grid">
-                  {MOODS.map((item) => {
-                    const active = mood === item.id
-                    return (
-                      <label
-                        key={item.id}
-                        className={`mood-card ${active ? 'is-active' : ''} mood-${item.id}`}
-                      >
-                        <input
-                          type="radio"
-                          name="mood"
-                          value={item.id}
-                          checked={active}
-                          onChange={() => setMood(item.id)}
-                        />
-                        <span className="mood-emoji" aria-hidden="true">
-                          {item.emoji}
-                        </span>
-                        <span className="mood-text">
-                          <strong>{item.label}</strong>
-                          <span>{item.description}</span>
-                          <em>“{item.example}”</em>
-                        </span>
-                        <span className="radio-dot" aria-hidden="true" />
-                      </label>
-                    )
-                  })}
+                <div className="subfield">
+                  <span className="subfield-label">Mood komentar</span>
+                  <div className="mood-grid">
+                    {MOODS.map((item) => {
+                      const active = mood === item.id
+                      return (
+                        <label
+                          key={item.id}
+                          className={`mood-card ${active ? 'is-active' : ''} mood-${item.id}`}
+                        >
+                          <input
+                            type="radio"
+                            name="mood"
+                            value={item.id}
+                            checked={active}
+                            onChange={() => setMood(item.id)}
+                          />
+                          <span className="mood-emoji" aria-hidden="true">
+                            {item.emoji}
+                          </span>
+                          <span className="mood-text">
+                            <strong>{item.label}</strong>
+                            <span>{item.description}</span>
+                            <em>“{item.example}”</em>
+                          </span>
+                          <span className="radio-dot" aria-hidden="true" />
+                        </label>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <div className="subfield">
+                  <span className="subfield-label">Mode komentar</span>
+                  <div className="mode-grid">
+                    {COMMENT_MODES.map((item) => {
+                      const active = commentMode === item.id
+                      return (
+                        <label
+                          key={item.id}
+                          className={`mode-card ${active ? 'is-active' : ''}`}
+                        >
+                          <input
+                            type="radio"
+                            name="comment-mode"
+                            value={item.id}
+                            checked={active}
+                            onChange={() => setCommentMode(item.id)}
+                          />
+                          <span className="mode-icon" aria-hidden="true">
+                            {item.id === 'unique' ? (
+                              <SparklesIcon size={17} />
+                            ) : (
+                              <UsersIcon size={17} />
+                            )}
+                          </span>
+                          <span className="mode-text">
+                            <strong>{item.label}</strong>
+                            <span>{item.description}</span>
+                          </span>
+                          <span className="radio-dot" aria-hidden="true" />
+                        </label>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <div className="subfield">
+                  <label className="subfield-label" htmlFor="video-context">
+                    Konteks video
+                    <span className="optional-tag">opsional</span>
+                  </label>
+                  <div className="context-field">
+                    <textarea
+                      id="video-context"
+                      rows={3}
+                      maxLength={500}
+                      placeholder="Contoh: Video dance viral dengan lagu pop, fokus ke koreografi dan outfit."
+                      value={context}
+                      onChange={(event) => setContext(event.target.value)}
+                    />
+                    <span className="char-count">{context.length}/500</span>
+                  </div>
+                  <p className="field-hint subtle">
+                    Semakin jelas konteksnya, semakin relevan komentar dari AI. Kosongkan untuk
+                    memakai URL video sebagai konteks.
+                  </p>
                 </div>
               </fieldset>
 
@@ -451,6 +523,20 @@ export default function App() {
                       <UsersIcon size={13} />
                       {selected.length} akun
                     </span>
+                    <span className="mini-chip">
+                      {commentMode === 'unique' ? (
+                        <SparklesIcon size={13} />
+                      ) : (
+                        <UsersIcon size={13} />
+                      )}
+                      {commentMode === 'unique' ? 'Unik' : 'Sama'}
+                    </span>
+                    {context.trim() && (
+                      <span className="mini-chip">
+                        <CheckIcon size={12} />
+                        Konteks
+                      </span>
+                    )}
                   </div>
                 </div>
 

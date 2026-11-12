@@ -47,10 +47,16 @@ export function checkStatus(signal) {
   return request('/status', { method: 'GET', signal })
 }
 
-export function submitComment({ url, accounts, mood }) {
+export function submitComment({ url, accounts, mood, context = '', perAccountComment = true }) {
   return request('/comment', {
     method: 'POST',
-    body: JSON.stringify({ url, accounts, mood }),
+    body: JSON.stringify({
+      url,
+      accounts,
+      mood,
+      context,
+      per_account_comment: perAccountComment,
+    }),
   })
 }
 

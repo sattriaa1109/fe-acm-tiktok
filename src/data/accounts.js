@@ -27,6 +27,20 @@ export const MOODS = [
   },
 ]
 
+// Mengikuti parameter per_account_comment di run_auto_comment() backend.
+export const COMMENT_MODES = [
+  {
+    id: 'unique',
+    label: 'Unik per akun',
+    description: 'AI membuat komentar berbeda untuk tiap akun.',
+  },
+  {
+    id: 'same',
+    label: 'Sama untuk semua',
+    description: 'Satu komentar dipakai ulang ke semua akun.',
+  },
+]
+
 export const ACCOUNT_IDS = ACCOUNTS.map((account) => account.id)
 
 export function getAccount(id) {
